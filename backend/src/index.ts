@@ -10,6 +10,9 @@ import { asyncHandler } from "./middlewares/asyncHandler.middleware";
 
 import "./config/passport.config";
 import passport from "passport";
+import authRoutes from "./routes/auth.route";
+import userRoutes from "./routes/user.route";
+import isAuthenticated from "./middlewares/isAuthenticated.middleware";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -48,9 +51,13 @@ app.get(
   })
 );
 
-// Routes will be added here in later phases
-// app.use(`${BASE_PATH}/auth`, authRoutes);
-// app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
+// Auth routes (public)
+app.use(`${BASE_PATH}/auth`, authRoutes);
+
+// Protected routes
+app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
+
+// More routes will be added in later phases
 // app.use(`${BASE_PATH}/workspace`, isAuthenticated, workspaceRoutes);
 // app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 // app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes);
