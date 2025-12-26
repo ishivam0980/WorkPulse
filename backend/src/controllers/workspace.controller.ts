@@ -21,12 +21,15 @@ import { getMemberRoleInWorkspace } from "../services/member.service";
 import { Permissions } from "../enums/role.enum";
 import { roleGuard } from "../utils/roleGuard";
 import { updateWorkspaceSchema } from "../validation/workspace.validation";
+import { UnauthorizedException } from "../utils/appError";
 
 export const createWorkspaceController = asyncHandler(
   async (req: Request, res: Response) => {
     const body = createWorkspaceSchema.parse(req.body);
 
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
+    
     const { workspace } = await createWorkspaceService(userId, body);
 
     return res.status(HTTPSTATUS.CREATED).json({
@@ -39,6 +42,7 @@ export const createWorkspaceController = asyncHandler(
 export const getAllWorkspacesUserIsMemberController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const { workspaces } = await getAllWorkspacesUserIsMemberService(userId);
 
@@ -53,6 +57,7 @@ export const getWorkspaceByIdController = asyncHandler(
   async (req: Request, res: Response) => {
     const workspaceId = workspaceIdSchema.parse(req.params.id);
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     await getMemberRoleInWorkspace(userId, workspaceId);
 
@@ -69,6 +74,7 @@ export const getWorkspaceMembersController = asyncHandler(
   async (req: Request, res: Response) => {
     const workspaceId = workspaceIdSchema.parse(req.params.id);
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.VIEW_ONLY]);
@@ -87,6 +93,7 @@ export const getWorkspaceAnalyticsController = asyncHandler(
   async (req: Request, res: Response) => {
     const workspaceId = workspaceIdSchema.parse(req.params.id);
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.VIEW_ONLY]);
@@ -106,6 +113,7 @@ export const changeWorkspaceMemberRoleController = asyncHandler(
     const { memberId, roleId } = changeRoleSchema.parse(req.body);
 
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.CHANGE_MEMBER_ROLE]);
@@ -129,6 +137,7 @@ export const updateWorkspaceByIdController = asyncHandler(
     const { name, description } = updateWorkspaceSchema.parse(req.body);
 
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.EDIT_WORKSPACE]);
@@ -150,6 +159,7 @@ export const deleteWorkspaceByIdController = asyncHandler(
   async (req: Request, res: Response) => {
     const workspaceId = workspaceIdSchema.parse(req.params.id);
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.DELETE_WORKSPACE]);

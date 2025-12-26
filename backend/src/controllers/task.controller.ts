@@ -18,10 +18,12 @@ import {
   updateTaskService,
 } from "../services/task.service";
 import { HTTPSTATUS } from "../config/http.config";
+import { UnauthorizedException } from "../utils/appError";
 
 export const createTaskController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const body = createTaskSchema.parse(req.body);
     const projectId = projectIdSchema.parse(req.params.projectId);
@@ -47,6 +49,7 @@ export const createTaskController = asyncHandler(
 export const updateTaskController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const body = updateTaskSchema.parse(req.body);
 
@@ -74,6 +77,7 @@ export const updateTaskController = asyncHandler(
 export const getAllTasksController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
 
@@ -112,6 +116,7 @@ export const getAllTasksController = asyncHandler(
 export const getTaskByIdController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const taskId = taskIdSchema.parse(req.params.id);
     const projectId = projectIdSchema.parse(req.params.projectId);
@@ -132,6 +137,7 @@ export const getTaskByIdController = asyncHandler(
 export const deleteTaskController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
 
     const taskId = taskIdSchema.parse(req.params.id);
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);

@@ -18,10 +18,12 @@ import {
   getProjectsInWorkspaceService,
   updateProjectService,
 } from "../services/project.service";
+import { UnauthorizedException } from "../utils/appError";
 
 export const createProjectController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
     const body = createProjectSchema.parse(req.body);
 
@@ -40,6 +42,7 @@ export const createProjectController = asyncHandler(
 export const getAllProjectsController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
@@ -69,6 +72,7 @@ export const getAllProjectsController = asyncHandler(
 export const getProjectByIdController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
     const projectId = projectIdSchema.parse(req.params.id);
 
@@ -90,6 +94,7 @@ export const getProjectByIdController = asyncHandler(
 export const getProjectAnalyticsController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
     const projectId = projectIdSchema.parse(req.params.id);
 
@@ -111,6 +116,7 @@ export const getProjectAnalyticsController = asyncHandler(
 export const updateProjectController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
     const projectId = projectIdSchema.parse(req.params.id);
     const body = updateProjectSchema.parse(req.body);
@@ -134,6 +140,7 @@ export const updateProjectController = asyncHandler(
 export const deleteProjectController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    if (!userId) throw new UnauthorizedException("User not authenticated");
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
     const projectId = projectIdSchema.parse(req.params.id);
 
