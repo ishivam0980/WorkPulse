@@ -10,6 +10,10 @@ import { useGetTasksQuery } from "@/hooks/api/use-task";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { Permissions } from "@/constant";
 import { WithPermission } from "@/hoc/with-permission";
+import { CreateTaskDialog } from "@/components/task/create-task-dialog";
+import { TaskFilters } from "@/components/task/task-filters";
+import { TaskTable } from "@/components/task/task-table";
+import { KanbanBoard } from "@/components/task/kanban-board";
 
 const TasksPage = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -50,6 +54,8 @@ const TasksPage = () => {
         </WithPermission>
       </div>
 
+      <TaskFilters workspaceId={workspaceId!} />
+
       <Tabs value={view} onValueChange={(v) => setView(v as "table" | "kanban")}>
         <div className="flex items-center justify-between">
           <TabsList>
@@ -68,70 +74,15 @@ const TasksPage = () => {
         </div>
 
         <TabsContent value="table" className="mt-4">
-          <div className="rounded-lg border bg-card">
-            {data?.tasks && data.tasks.length > 0 ? (
-              <div className="divide-y">
-                {data.tasks.map((task) => (
-                  <div key={task._id} className="flex items-center gap-4 p-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{task.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {task.project?.emoji} {task.project?.name}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        task.status === "DONE" 
-                          ? "bg-green-500/10 text-green-500"
-                          : task.status === "IN_PROGRESS"
-                          ? "bg-blue-500/10 text-blue-500"
-                          : "bg-gray-500/10 text-gray-500"
-                      }`}>
-                        {task.status.replace("_", " ")}
-                      </span>
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        task.priority === "HIGH" 
-                          ? "bg-red-500/10 text-red-500"
-                          : task.priority === "MEDIUM"
-                          ? "bg-yellow-500/10 text-yellow-500"
-                          : "bg-green-500/10 text-green-500"
-                      }`}>
-                        {task.priority}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center text-muted-foreground">
-                No tasks found. Create your first task to get started!
-              </div>
-            )}
-          </div>
+          <TaskTable tasks={data?.tasks || []} workspaceId={workspaceId!} />
         </TabsContent>
 
         <TabsContent value="kanban" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {["BACKLOG", "TODO", "IN_PROGRESS", "IN_REVIEW", "DONE"].map((status) => (
-              <div key={status} className="rounded-lg border bg-muted/50 p-4">
-                <h3 className="font-medium mb-4">{status.replace("_", " ")}</h3>
-                <div className="space-y-2">
-                  {data?.tasks
-                    ?.filter((t) => t.status === status)
-                    .map((task) => (
-                      <div key={task._id} className="rounded-lg bg-card p-3 shadow-sm">
-                        <p className="font-medium text-sm">{task.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {task.project?.emoji} {task.project?.name}
-                        </p>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <KanbanBoard tasks={data?.tasks || []} workspaceId={workspaceId!} />
         </TabsContent>
       </Tabs>
+
+      <CreateTaskDialog workspaceId={workspaceId!} />
     </div>
   );
 };

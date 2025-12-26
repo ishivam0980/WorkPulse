@@ -4,11 +4,12 @@ import { ArrowLeft, Plus, BarChart3, CheckCircle2, AlertTriangle } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetProjectQuery, useGetProjectAnalyticsQuery } from "@/hooks/api/use-project";
-import { useGetTasksQuery } from "@/hooks/api/use-task";
 import { useCreateTaskDialog } from "@/hooks/use-task-dialog";
 import { PageLoader } from "@/components/skeleton-loaders/page-loader";
 import { Permissions } from "@/constant";
 import { WithPermission } from "@/hoc/with-permission";
+import { ProjectTasksList } from "@/components/task/project-tasks-list";
+import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 
 const ProjectDetailsPage = () => {
   const navigate = useNavigate();
@@ -25,14 +26,7 @@ const ProjectDetailsPage = () => {
     projectId: projectId!,
   });
 
-  const { data: tasksData, isLoading: isTasksLoading } = useGetTasksQuery({
-    workspaceId: workspaceId!,
-    projectId: projectId!,
-    pageSize: 10,
-    pageNumber: 1,
-  });
-
-  if (isProjectLoading || isAnalyticsLoading || isTasksLoading) {
+  if (isProjectLoading || isAnalyticsLoading) {
     return <PageLoader />;
   }
 
@@ -80,7 +74,7 @@ const ProjectDetailsPage = () => {
         </div>
         <div className="ml-auto">
           <WithPermission permission={Permissions.CREATE_TASK} workspaceId={workspaceId!}>
-            <Button onClick={openCreateTask}>
+            <Button onClick={() => openCreateTask()}>
               <Plus className="mr-2 h-4 w-4" />
               New Task
             </Button>
@@ -104,54 +98,9 @@ const ProjectDetailsPage = () => {
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Project Tasks</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {tasksData?.tasks && tasksData.tasks.length > 0 ? (
-            <div className="space-y-2">
-              {tasksData.tasks.map((task) => (
-                <div
-                  key={task._id}
-                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{task.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {task.taskCode}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      task.status === "DONE" 
-                        ? "bg-green-500/10 text-green-500"
-                        : task.status === "IN_PROGRESS"
-                        ? "bg-blue-500/10 text-blue-500"
-                        : "bg-gray-500/10 text-gray-500"
-                    }`}>
-                      {task.status.replace("_", " ")}
-                    </span>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      task.priority === "HIGH" 
-                        ? "bg-red-500/10 text-red-500"
-                        : task.priority === "MEDIUM"
-                        ? "bg-yellow-500/10 text-yellow-500"
-                        : "bg-green-500/10 text-green-500"
-                    }`}>
-                      {task.priority}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-center py-6">
-              No tasks in this project yet. Create your first task to get started!
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <ProjectTasksList workspaceId={workspaceId!} projectId={projectId!} />
+
+      <CreateTaskDialog workspaceId={workspaceId!} />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   createTaskMutationFn,
   deleteTaskMutationFn,
@@ -6,12 +7,7 @@ import {
   getTaskByIdQueryFn,
   updateTaskMutationFn,
 } from "./task-api";
-import {
-  AllTaskPayloadType,
-  CreateTaskPayloadType,
-  DeleteTaskPayloadType,
-  UpdateTaskPayloadType,
-} from "@/types/api.type";
+import { AllTaskPayloadType } from "@/types/api.type";
 
 export const useGetTasksQuery = (
   filters: AllTaskPayloadType,
@@ -38,62 +34,118 @@ export const useGetTaskByIdQuery = (
   });
 };
 
-export const useCreateTaskMutation = () => {
+export const useCreateTaskMutation = (workspaceId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateTaskPayloadType) =>
-      createTaskMutationFn(payload),
-    onSuccess: (_, variables) => {
+    mutationFn: (data: {
+      title: string;
+      description?: string;
+      projectId: string;
+      status: string;
+      priority: string;
+      assignedTo?: string | null;
+      dueDate?: string;
+    }) =>
+      createTaskMutationFn({
+        workspaceId,
+        projectId: data.projectId,
+        data: {
+          title: data.title,
+          description: data.description,
+          status: data.status,
+          priority: data.priority,
+          assignedTo: data.assignedTo,
+          dueDate: data.dueDate,
+        },
+      }),
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["alltasks", variables.workspaceId],
+        queryKey: ["alltasks", workspaceId],
       });
       queryClient.invalidateQueries({
         queryKey: ["projectAnalytics"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["workspace-analytics", variables.workspaceId],
+        queryKey: ["workspace-analytics", workspaceId],
       });
+      toast.success("Task created successfully");
+    },
+    onError: (error: { message: string }) => {
+      toast.error(error.message || "Failed to create task");
     },
   });
 };
 
-export const useUpdateTaskMutation = () => {
+export const useEditTaskMutation = (workspaceId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: UpdateTaskPayloadType) =>
-      updateTaskMutationFn(payload),
-    onSuccess: (_, variables) => {
+    mutationFn: ({
+      taskId,
+      data,
+    }: {
+      taskId: string;
+      data: {
+        title: string;
+        description?: string;
+        projectId: string;
+        status: string;
+        priority: string;
+        assignedTo?: string | null;
+        dueDate?: string;
+      };
+    }) =>
+      updateTaskMutationFn({
+        workspaceId,
+        projectId: data.projectId,
+        taskId,
+        data: {
+          title: data.title,
+          description: data.description,
+          status: data.status,
+          priority: data.priority,
+          assignedTo: data.assignedTo,
+          dueDate: data.dueDate,
+        },
+      }),
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["alltasks", variables.workspaceId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["task", variables.taskId],
+        queryKey: ["alltasks", workspaceId],
       });
       queryClient.invalidateQueries({
         queryKey: ["projectAnalytics"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["workspace-analytics", variables.workspaceId],
+        queryKey: ["workspace-analytics", workspaceId],
       });
+      toast.success("Task updated successfully");
+    },
+    onError: (error: { message: string }) => {
+      toast.error(error.message || "Failed to update task");
     },
   });
 };
 
-export const useDeleteTaskMutation = () => {
+export const useDeleteTaskMutation = (workspaceId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: DeleteTaskPayloadType) =>
-      deleteTaskMutationFn(payload),
-    onSuccess: (_, variables) => {
+    mutationFn: (taskId: string) =>
+      deleteTaskMutationFn({
+        workspaceId,
+        taskId,
+      }),
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["alltasks", variables.workspaceId],
+        queryKey: ["alltasks", workspaceId],
       });
       queryClient.invalidateQueries({
         queryKey: ["projectAnalytics"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["workspace-analytics", variables.workspaceId],
+        queryKey: ["workspace-analytics", workspaceId],
       });
+    },
+    onError: (error: { message: string }) => {
+      toast.error(error.message || "Failed to delete task");
     },
   });
 };

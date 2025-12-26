@@ -3,14 +3,16 @@ import { TaskType } from "@/types/api.type";
 
 type CreateTaskDialogState = {
   isOpen: boolean;
-  onOpen: () => void;
+  task: TaskType | null;
+  onOpen: (task?: TaskType) => void;
   onClose: () => void;
 };
 
 export const useCreateTaskDialog = create<CreateTaskDialogState>((set) => ({
   isOpen: false,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false }),
+  task: null,
+  onOpen: (task) => set({ isOpen: true, task: task || null }),
+  onClose: () => set({ isOpen: false, task: null }),
 }));
 
 type EditTaskDialogState = {
