@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Building2, Loader, Settings, Trash2, User } from "lucide-react";
+import { Building2, Loader, Moon, Monitor, Palette, Settings, Sun, Trash2, User } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   useGetWorkspaceQuery,
   useEditWorkspaceMutation,
@@ -21,6 +22,7 @@ import { PageLoader } from "@/components/skeleton-loaders/page-loader";
 import { getAvatarColor, getAvatarFallbackText, Permissions } from "@/constant";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useAuthContext } from "@/context/auth-provider";
+import { useTheme } from "@/context/theme-provider";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -28,6 +30,7 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const { hasPermission } = usePermissions(workspaceId!);
+  const { theme, setTheme } = useTheme();
   const { user } = useAuthContext();
   const confirmDialog = useConfirmDialog();
 
@@ -307,6 +310,56 @@ const SettingsPage = () => {
                   <p className="text-sm text-muted-foreground">Account Status</p>
                   <p className="font-medium text-green-600">Active</p>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5" />
+                Appearance
+              </CardTitle>
+              <CardDescription>
+                Customize how WorkPulse looks on your device
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Label>Theme</Label>
+                <RadioGroup
+                  value={theme}
+                  onValueChange={(value: string) => setTheme(value as "light" | "dark" | "system")}
+                  className="grid grid-cols-3 gap-4"
+                >
+                  <Label
+                    htmlFor="light"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer [&:has([data-state=checked])]:border-primary"
+                  >
+                    <RadioGroupItem value="light" id="light" className="sr-only" />
+                    <Sun className="mb-3 h-6 w-6" />
+                    <span className="text-sm font-medium">Light</span>
+                  </Label>
+                  <Label
+                    htmlFor="dark"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer [&:has([data-state=checked])]:border-primary"
+                  >
+                    <RadioGroupItem value="dark" id="dark" className="sr-only" />
+                    <Moon className="mb-3 h-6 w-6" />
+                    <span className="text-sm font-medium">Dark</span>
+                  </Label>
+                  <Label
+                    htmlFor="system"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer [&:has([data-state=checked])]:border-primary"
+                  >
+                    <RadioGroupItem value="system" id="system" className="sr-only" />
+                    <Monitor className="mb-3 h-6 w-6" />
+                    <span className="text-sm font-medium">System</span>
+                  </Label>
+                </RadioGroup>
+                <p className="text-xs text-muted-foreground">
+                  Select your preferred theme. System will automatically switch based on your device settings.
+                </p>
               </div>
             </CardContent>
           </Card>
