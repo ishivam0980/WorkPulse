@@ -1,19 +1,37 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BarChart3, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { BarChart3, CheckCircle2, Clock, AlertTriangle, ArrowRight, FolderOpen, Users, Settings, ListTodo, Plus } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuthContext } from "@/context/auth-provider";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { useGetWorkspaceAnalyticsQuery } from "@/hooks/api/use-workspace";
 import { useGetProjectsQuery } from "@/hooks/api/use-project";
+import { useGetTasksQuery } from "@/hooks/api/use-task";
+import { useCreateTaskDialog } from "@/hooks/use-task-dialog";
+import { useCreateProjectDialog } from "@/hooks/use-create-project-dialog";
 import { PageLoader } from "@/components/skeleton-loaders/page-loader";
+import { CreateTaskDialog } from "@/components/task/create-task-dialog";
+import { Permissions } from "@/constant";
+import { WithPermission } from "@/hoc/with-permission";
+
+const statusColors: Record<string, string> = {
+  BACKLOG: "bg-gray-500/10 text-gray-500",
+  TODO: "bg-blue-500/10 text-blue-500",
+  IN_PROGRESS: "bg-purple-500/10 text-purple-500",
+  IN_REVIEW: "bg-yellow-500/10 text-yellow-500",
+  DONE: "bg-green-500/10 text-green-500",
+};
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const params = useParams<{ workspaceId: string }>();
   const { user } = useAuthContext();
   const { setWorkspaceId } = useWorkspaceId();
+  const { onOpen: openCreateTask } = useCreateTaskDialog();
+  const { onOpen: openCreateProject } = useCreateProjectDialog();
 
   const workspaceId = params.workspaceId!;
 
@@ -37,7 +55,14 @@ const DashboardPage = () => {
   const { data: projectsData, isLoading: isProjectsLoading } =
     useGetProjectsQuery({ workspaceId, pageSize: 5, pageNumber: 1 });
 
-  if (isAnalyticsLoading || isProjectsLoading) {
+  const { data: tasksData, isLoading: isTasksLoading } =
+    useGetTasksQuery({
+      workspaceId,
+      pageSize: 5,
+      pageNumber: 1,
+    });
+
+  if (isAnalyticsLoading || isProjectsLoading || isTasksLoading) {
     return <PageLoader />;
   }
 
@@ -66,19 +91,56 @@ const DashboardPage = () => {
     {
       title: "Projects",
       value: projectsData?.pagination?.totalCount || 0,
-      icon: Clock,
+      icon: FolderOpen,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
     },
   ];
 
+  const quickActions = [
+    {
+      title: "View All Tasks",
+      description: "Manage and track your team's tasks",
+      icon: ListTodo,
+      onClick: () => navigate(`/workspace/${workspaceId}/tasks`),
+    },
+    {
+      title: "Team Members",
+      description: "View and manage workspace members",
+      icon: Users,
+      onClick: () => navigate(`/workspace/${workspaceId}/members`),
+    },
+    {
+      title: "Workspace Settings",
+      description: "Configure your workspace preferences",
+      icon: Settings,
+      onClick: () => navigate(`/workspace/${workspaceId}/settings`),
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {user?.name || "User"}! Here's an overview of your workspace.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome back, {user?.name || "User"}! Here's an overview of your workspace.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <WithPermission permission={Permissions.CREATE_PROJECT} workspaceId={workspaceId}>
+            <Button variant="outline" onClick={openCreateProject}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Project
+            </Button>
+          </WithPermission>
+          <WithPermission permission={Permissions.CREATE_TASK} workspaceId={workspaceId}>
+            <Button onClick={() => openCreateTask()}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Task
+            </Button>
+          </WithPermission>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -97,75 +159,106 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Projects</CardTitle>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Tasks</CardTitle>
+              <CardDescription>Your latest tasks across all projects</CardDescription>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => navigate(`/workspace/${workspaceId}/tasks`)}>
+              View All
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </CardHeader>
           <CardContent>
-            {projectsData?.projects && projectsData.projects.length > 0 ? (
-              <div className="space-y-4">
-                {projectsData.projects.map((project) => (
+            {tasksData?.tasks && tasksData.tasks.length > 0 ? (
+              <div className="space-y-3">
+                {tasksData.tasks.map((task) => (
                   <div
-                    key={project._id}
+                    key={task._id}
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-                    onClick={() =>
-                      navigate(`/workspace/${workspaceId}/project/${project._id}`)
-                    }
                   >
-                    <div className="text-2xl">{project.emoji || "📁"}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{project.name}</p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {project.description || "No description"}
+                      <p className="font-medium truncate">{task.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {task.project?.emoji} {task.project?.name}
                       </p>
                     </div>
+                    <Badge variant="secondary" className={statusColors[task.status]}>
+                      {task.status.replace("_", " ")}
+                    </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-center py-6">
-                No projects yet. Create your first project to get started!
-              </p>
+              <div className="text-center py-8 text-muted-foreground">
+                <ListTodo className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p>No tasks yet</p>
+                <p className="text-sm">Create your first task to get started!</p>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div
-              className="p-3 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-              onClick={() => navigate(`/workspace/${workspaceId}/tasks`)}
-            >
-              <p className="font-medium">View All Tasks</p>
-              <p className="text-sm text-muted-foreground">
-                Manage and track your team's tasks
-              </p>
-            </div>
-            <div
-              className="p-3 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-              onClick={() => navigate(`/workspace/${workspaceId}/members`)}
-            >
-              <p className="font-medium">Team Members</p>
-              <p className="text-sm text-muted-foreground">
-                View and manage workspace members
-              </p>
-            </div>
-            <div
-              className="p-3 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-              onClick={() => navigate(`/workspace/${workspaceId}/settings`)}
-            >
-              <p className="font-medium">Workspace Settings</p>
-              <p className="text-sm text-muted-foreground">
-                Configure your workspace preferences
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Projects</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {projectsData?.projects && projectsData.projects.length > 0 ? (
+                <div className="space-y-3">
+                  {projectsData.projects.slice(0, 4).map((project) => (
+                    <div
+                      key={project._id}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                      onClick={() =>
+                        navigate(`/workspace/${workspaceId}/project/${project._id}`)
+                      }
+                    >
+                      <div className="text-xl">{project.emoji || "📁"}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate text-sm">{project.name}</p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-muted-foreground text-sm">
+                  No projects yet
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {quickActions.map((action) => (
+                <div
+                  key={action.title}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                  onClick={action.onClick}
+                >
+                  <div className="p-2 rounded-lg bg-muted">
+                    <action.icon className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm">{action.title}</p>
+                    <p className="text-xs text-muted-foreground">{action.description}</p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       </div>
+
+      <CreateTaskDialog workspaceId={workspaceId} />
     </div>
   );
 };

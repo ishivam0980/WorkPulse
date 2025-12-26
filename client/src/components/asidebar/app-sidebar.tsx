@@ -9,6 +9,9 @@ import {
   ChevronDown,
   LogOut,
   ChevronsUpDown,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 
 import {
@@ -21,6 +24,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -39,14 +43,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Logo from "@/components/logo";
 import { useAuthContext } from "@/context/auth-provider";
 import { useGetAllWorkspacesQuery } from "@/hooks/api/use-workspace";
-import { useGetProjectsQuery } from "@/hooks/api/use-project";
+import { useGetProjectsQuery, useDeleteProjectMutation } from "@/hooks/api/use-project";
 import { useCreateWorkspaceDialog } from "@/hooks/use-create-workspace-dialog";
 import { useCreateProjectDialog } from "@/hooks/use-create-project-dialog";
+import { useEditProjectDialog } from "@/components/workspace/edit-project-dialog";
 import { getAvatarColor, getAvatarFallbackText, Permissions } from "@/constant";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutMutationFn } from "@/hooks/api/auth-api";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
+import { ProjectType } from "@/types/api.type";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -59,9 +66,13 @@ export function AppSidebar() {
   const { data: workspacesData } = useGetAllWorkspacesQuery();
   const { data: projectsData } = useGetProjectsQuery({ workspaceId: workspaceId! });
   const { hasPermission } = usePermissions(workspaceId || "");
+  const { confirm } = useConfirmDialog();
 
   const { onOpen: openCreateWorkspace } = useCreateWorkspaceDialog();
   const { onOpen: openCreateProject } = useCreateProjectDialog();
+  const { onOpen: openEditProject } = useEditProjectDialog();
+
+  const { mutate: deleteProject } = useDeleteProjectMutation();
 
   const { mutate: logout } = useMutation({
     mutationFn: logoutMutationFn,
@@ -73,6 +84,28 @@ export function AppSidebar() {
       toast.error("Failed to logout");
     },
   });
+
+  const handleDeleteProject = async (project: ProjectType) => {
+    const confirmed = await confirm({
+      title: "Delete Project",
+      message: `Are you sure you want to delete "${project.name}"? All tasks will be deleted.`,
+    });
+
+    if (confirmed) {
+      deleteProject(
+        { workspaceId: workspaceId!, projectId: project._id },
+        {
+          onSuccess: () => {
+            toast.success("Project deleted");
+            navigate(`/workspace/${workspaceId}`);
+          },
+          onError: (error: any) => {
+            toast.error(error?.message || "Failed to delete project");
+          },
+        }
+      );
+    }
+  };
 
   const currentWorkspace = workspacesData?.workspaces?.find(
     (w) => w._id === workspaceId
@@ -207,6 +240,32 @@ export function AppSidebar() {
                         <span className="truncate">{project.name}</span>
                       </Link>
                     </SidebarMenuButton>
+                    {(hasPermission(Permissions.EDIT_PROJECT) || hasPermission(Permissions.DELETE_PROJECT)) && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <SidebarMenuAction>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </SidebarMenuAction>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="right" align="start">
+                          {hasPermission(Permissions.EDIT_PROJECT) && (
+                            <DropdownMenuItem onClick={() => openEditProject(project)}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                          )}
+                          {hasPermission(Permissions.DELETE_PROJECT) && (
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteProject(project)}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </SidebarMenuItem>
                 ))}
                 {(!projectsData?.projects || projectsData.projects.length === 0) && (
