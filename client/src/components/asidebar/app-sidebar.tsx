@@ -4,7 +4,6 @@ import {
   ListTodo,
   Users,
   Settings,
-  FolderKanban,
   Plus,
   ChevronDown,
   LogOut,

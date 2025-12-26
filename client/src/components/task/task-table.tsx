@@ -1,4 +1,4 @@
-import { CheckSquare, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { CheckSquare, MoreHorizontal, Pencil, Trash2, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,7 @@ import { getAvatarColor, getAvatarFallbackText, Permissions } from "@/constant";
 import { usePermissions } from "@/hooks/use-permissions";
 import { TaskType } from "@/types/api.type";
 import { EmptyState } from "@/components/reusable/empty-state";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TaskTableProps {
   tasks: TaskType[];
@@ -50,8 +52,9 @@ const priorityColors: Record<string, string> = {
 export function TaskTable({ tasks, workspaceId }: TaskTableProps) {
   const { onOpen } = useCreateTaskDialog();
   const { hasPermission } = usePermissions(workspaceId);
-  const { confirm, isOpen, handleConfirm, handleCancel } = useConfirmDialog();
+  const { confirm } = useConfirmDialog();
   const { mutate: deleteTask } = useDeleteTaskMutation(workspaceId);
+  const isMobile = useIsMobile();
 
   const handleEdit = (task: TaskType) => {
     onOpen(task);
@@ -88,6 +91,100 @@ export function TaskTable({ tasks, workspaceId }: TaskTableProps) {
     );
   }
 
+  // Mobile Card View
+  if (isMobile) {
+    return (
+      <div className="space-y-3">
+        {tasks.map((task) => {
+          const assignee = task.assignedTo;
+          const initials = assignee ? getAvatarFallbackText(assignee.name) : "";
+          const avatarColor = initials ? getAvatarColor(initials) : "";
+
+          return (
+            <Card key={task._id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{task.title}</p>
+                    {task.project && (
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {task.project.emoji} {task.project.name}
+                      </p>
+                    )}
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {hasPermission(Permissions.EDIT_TASK) && (
+                        <DropdownMenuItem onClick={() => handleEdit(task)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                      )}
+                      {hasPermission(Permissions.DELETE_TASK) && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(task)}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Badge variant="outline" className={statusColors[task.status]}>
+                    {task.status.replace("_", " ")}
+                  </Badge>
+                  <Badge variant="outline" className={priorityColors[task.priority]}>
+                    {task.priority}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center justify-between mt-3 pt-3 border-t">
+                  <div className="flex items-center gap-2">
+                    {assignee ? (
+                      <>
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage src={assignee.profilePicture || undefined} />
+                          <AvatarFallback
+                            style={{ backgroundColor: avatarColor }}
+                            className="text-[10px]"
+                          >
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-xs text-muted-foreground">{assignee.name}</span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Unassigned</span>
+                    )}
+                  </div>
+                  {task.dueDate && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Calendar className="h-3 w-3" />
+                      {format(new Date(task.dueDate), "MMM d")}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Desktop Table View
   return (
     <div className="rounded-lg border bg-card">
       <Table>

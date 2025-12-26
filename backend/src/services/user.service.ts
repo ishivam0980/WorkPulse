@@ -14,6 +14,25 @@ export const getCurrentUserService = async (userId: string) => {
   return { user };
 };
 
+export const updateCurrentUserService = async (
+  userId: string,
+  data: { name?: string }
+) => {
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw new NotFoundException("User not found");
+  }
+
+  if (data.name) {
+    user.name = data.name;
+  }
+
+  await user.save();
+
+  return { user };
+};
+
 export const updateCurrentWorkspaceService = async (
   userId: string,
   workspaceId: string

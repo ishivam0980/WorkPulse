@@ -68,23 +68,23 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 p-4 sm:p-6">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8">
         <div className="flex flex-col items-center space-y-2 text-center">
           <Logo />
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base px-4">
             Streamline your team's workflow and boost productivity
           </p>
         </div>
 
-        <Card>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
-            <CardDescription>
+        <Card className="border-0 shadow-lg sm:border sm:shadow-sm">
+          <CardHeader className="space-y-1 px-4 sm:px-6">
+            <CardTitle className="text-xl sm:text-2xl font-bold">Welcome</CardTitle>
+            <CardDescription className="text-sm">
               Sign in to your account or create a new one
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <Tabs defaultValue="signin" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>

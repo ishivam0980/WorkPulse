@@ -38,16 +38,16 @@ const TasksPage = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Tasks</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage and track all tasks in your workspace
           </p>
         </div>
         <WithPermission permission={Permissions.CREATE_TASK} workspaceId={workspaceId!}>
-          <Button onClick={openCreateTask}>
+          <Button onClick={() => openCreateTask()} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             New Task
           </Button>
@@ -57,18 +57,18 @@ const TasksPage = () => {
       <TaskFilters workspaceId={workspaceId!} />
 
       <Tabs value={view} onValueChange={(v) => setView(v as "table" | "kanban")}>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <TabsList>
-            <TabsTrigger value="table">
-              <List className="mr-2 h-4 w-4" />
+            <TabsTrigger value="table" className="text-xs sm:text-sm">
+              <List className="mr-1.5 sm:mr-2 h-4 w-4" />
               Table
             </TabsTrigger>
-            <TabsTrigger value="kanban">
-              <LayoutGrid className="mr-2 h-4 w-4" />
+            <TabsTrigger value="kanban" className="text-xs sm:text-sm">
+              <LayoutGrid className="mr-1.5 sm:mr-2 h-4 w-4" />
               Kanban
             </TabsTrigger>
           </TabsList>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {data?.pagination?.totalCount || 0} tasks
           </p>
         </div>

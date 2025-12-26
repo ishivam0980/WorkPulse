@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BarChart3, CheckCircle2, Clock, AlertTriangle, ArrowRight, FolderOpen, Users, Settings, ListTodo, Plus } from "lucide-react";
+import { BarChart3, CheckCircle2, AlertTriangle, ArrowRight, FolderOpen, Users, Settings, ListTodo, Plus } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -120,51 +120,53 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Welcome back, {user?.name || "User"}! Here's an overview of your workspace.
           </p>
         </div>
         <div className="flex gap-2">
           <WithPermission permission={Permissions.CREATE_PROJECT} workspaceId={workspaceId}>
-            <Button variant="outline" onClick={openCreateProject}>
+            <Button variant="outline" onClick={openCreateProject} size="sm" className="sm:size-default">
               <Plus className="mr-2 h-4 w-4" />
-              New Project
+              <span className="hidden sm:inline">New Project</span>
+              <span className="sm:hidden">Project</span>
             </Button>
           </WithPermission>
           <WithPermission permission={Permissions.CREATE_TASK} workspaceId={workspaceId}>
-            <Button onClick={() => openCreateTask()}>
+            <Button onClick={() => openCreateTask()} size="sm" className="sm:size-default">
               <Plus className="mr-2 h-4 w-4" />
-              New Task
+              <span className="hidden sm:inline">New Task</span>
+              <span className="sm:hidden">Task</span>
             </Button>
           </WithPermission>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6 sm:pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">{stat.title}</CardTitle>
+              <div className={`p-1.5 sm:p-2 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color}`} />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+            <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="lg:col-span-2 order-2 lg:order-1">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <CardTitle>Recent Tasks</CardTitle>
-              <CardDescription>Your latest tasks across all projects</CardDescription>
+              <CardTitle className="text-base sm:text-lg">Recent Tasks</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Your latest tasks across all projects</CardDescription>
             </div>
             <Button variant="ghost" size="sm" onClick={() => navigate(`/workspace/${workspaceId}/tasks`)}>
               View All
@@ -201,7 +203,7 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        <div className="space-y-4">
+        <div className="space-y-4 order-1 lg:order-2">
           <Card>
             <CardHeader>
               <CardTitle>Recent Projects</CardTitle>

@@ -40,24 +40,34 @@ const Header = () => {
   };
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+    <header className="flex h-14 shrink-0 items-center gap-2 border-b px-2 sm:px-4">
       <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-2 h-4" />
+      <Separator orientation="vertical" className="mr-2 h-4 hidden sm:block" />
       
-      {/* Search Bar */}
+      {/* Search Bar - Hidden on mobile, just show icon */}
       <Button
         variant="outline"
-        className="flex-1 max-w-md justify-start text-muted-foreground h-9 px-3 bg-muted/50 border-none hover:bg-muted"
+        className="hidden sm:flex flex-1 max-w-md justify-start text-muted-foreground h-9 px-3 bg-muted/50 border-none hover:bg-muted"
         onClick={openSearch}
       >
         <Search className="mr-2 h-4 w-4" />
         <span className="text-sm">Search tasks, projects...</span>
-        <kbd className="pointer-events-none ml-auto hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium sm:inline-flex">
+        <kbd className="pointer-events-none ml-auto hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium lg:inline-flex">
           <Command className="h-3 w-3" />K
         </kbd>
       </Button>
 
-      <div className="flex items-center gap-2 ml-auto">
+      {/* Mobile Search Icon */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="sm:hidden"
+        onClick={openSearch}
+      >
+        <Search className="h-5 w-5" />
+      </Button>
+
+      <div className="flex items-center gap-1 sm:gap-2 ml-auto">
         {/* Theme Toggle */}
         <Button
           variant="ghost"
@@ -73,12 +83,12 @@ const Header = () => {
         </Button>
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative hidden sm:flex">
           <Bell className="h-5 w-5" />
           <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
         </Button>
 
-        <Separator orientation="vertical" className="h-6" />
+        <Separator orientation="vertical" className="h-6 hidden sm:block" />
 
         {/* User Menu */}
         <DropdownMenu>
