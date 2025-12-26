@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { CheckSquare, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -26,6 +26,7 @@ import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { getAvatarColor, getAvatarFallbackText, Permissions } from "@/constant";
 import { usePermissions } from "@/hooks/use-permissions";
 import { TaskType } from "@/types/api.type";
+import { EmptyState } from "@/components/reusable/empty-state";
 
 interface TaskTableProps {
   tasks: TaskType[];
@@ -72,8 +73,17 @@ export function TaskTable({ tasks, workspaceId }: TaskTableProps) {
 
   if (tasks.length === 0) {
     return (
-      <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-        No tasks found. Create your first task to get started!
+      <div className="rounded-lg border bg-card">
+        <EmptyState
+          icon={<CheckSquare className="h-10 w-10 text-muted-foreground" />}
+          title="No tasks yet"
+          description="Create your first task to start tracking your work and boost productivity."
+          action={
+            hasPermission(Permissions.CREATE_TASK) ? (
+              <Button onClick={() => onOpen()}>Create Task</Button>
+            ) : undefined
+          }
+        />
       </div>
     );
   }

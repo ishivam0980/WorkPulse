@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import CreateWorkspaceDialog from "@/components/workspace/create-workspace-dialog";
 import CreateProjectDialog from "@/components/workspace/create-project-dialog";
 import { EditProjectDialog } from "@/components/workspace/edit-project-dialog";
+import { SearchDialog } from "@/components/search/search-dialog";
 
 const AppLayout = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -21,6 +22,7 @@ const AppLayout = () => {
       <CreateWorkspaceDialog />
       <CreateProjectDialog />
       {workspaceId && <EditProjectDialog workspaceId={workspaceId} />}
+      {workspaceId && <SearchDialog workspaceId={workspaceId} />}
     </SidebarProvider>
   );
 };

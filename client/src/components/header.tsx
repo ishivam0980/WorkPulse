@@ -1,10 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { LogOut, Settings, User, ChevronDown, Search, Bell, Loader, Moon, Sun, Monitor } from "lucide-react";
+import { LogOut, Settings, User, ChevronDown, Search, Bell, Loader, Moon, Sun, Monitor, Command } from "lucide-react";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -22,6 +21,7 @@ import {
 import { useAuthContext } from "@/context/auth-provider";
 import { useTheme } from "@/context/theme-provider";
 import { useLogout } from "@/hooks/api/use-auth";
+import { useSearchDialog } from "@/hooks/use-search-dialog";
 import { getAvatarColor, getAvatarFallbackText } from "@/constant";
 
 const Header = () => {
@@ -30,6 +30,7 @@ const Header = () => {
   const { user } = useAuthContext();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const { onOpen: openSearch } = useSearchDialog();
 
   const userInitials = getAvatarFallbackText(user?.name || "");
   const avatarColor = getAvatarColor(userInitials);
@@ -44,16 +45,17 @@ const Header = () => {
       <Separator orientation="vertical" className="mr-2 h-4" />
       
       {/* Search Bar */}
-      <div className="flex-1 max-w-md">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search tasks, projects..."
-            className="pl-9 h-9 bg-muted/50 border-none focus-visible:bg-background"
-          />
-        </div>
-      </div>
+      <Button
+        variant="outline"
+        className="flex-1 max-w-md justify-start text-muted-foreground h-9 px-3 bg-muted/50 border-none hover:bg-muted"
+        onClick={openSearch}
+      >
+        <Search className="mr-2 h-4 w-4" />
+        <span className="text-sm">Search tasks, projects...</span>
+        <kbd className="pointer-events-none ml-auto hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium sm:inline-flex">
+          <Command className="h-3 w-3" />K
+        </kbd>
+      </Button>
 
       <div className="flex items-center gap-2 ml-auto">
         {/* Theme Toggle */}
