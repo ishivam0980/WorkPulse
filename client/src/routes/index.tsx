@@ -9,6 +9,8 @@ import MembersPage from "@/page/members/members.page";
 import SettingsPage from "@/page/settings/settings.page";
 import ProjectDetailsPage from "@/page/project/project-details.page";
 import InviteUserPage from "@/page/invite/invite.page";
+import NotFoundPage from "@/page/errors/not-found.page";
+import UnauthorizedPage from "@/page/errors/unauthorized.page";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/invite/workspace/:inviteCode/join",
     element: <InviteUserPage />,
+  },
+  {
+    path: "/unauthorized",
+    element: <UnauthorizedPage />,
   },
   {
     element: <ProtectedRoute />,
@@ -52,6 +58,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 
