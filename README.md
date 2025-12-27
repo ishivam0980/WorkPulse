@@ -1,6 +1,10 @@
 # WorkPulse - B2B Team Project Management Platform
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Railway-blueviolet)](https://splendid-tranquility-production.up.railway.app)
+
 WorkPulse is a full-stack Software-as-a-Service (SaaS) application designed for B2B team collaboration and project management. Built with modern web technologies, it provides organizations with tools to manage workspaces, projects, tasks, and team members with granular role-based access control.
+
+**🚀 Live Demo:** [https://splendid-tranquility-production.up.railway.app](https://splendid-tranquility-production.up.railway.app)
 
 ## Table of Contents
 
