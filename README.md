@@ -27,46 +27,49 @@ The application follows a client-server architecture with a RESTful API backend 
 
 ### Backend
 
-| Technology | Purpose |
-|------------|---------|
-| Node.js | JavaScript runtime environment |
-| Express.js | Web application framework |
-| TypeScript | Static type checking and enhanced developer experience |
-| MongoDB | NoSQL document database |
-| Mongoose | Object Data Modeling (ODM) library |
-| Passport.js | Authentication middleware |
-| Zod | Schema validation library |
-| Cookie-Session | Session management |
+| Technology     | Purpose                                                |
+| -------------- | ------------------------------------------------------ |
+| Node.js        | JavaScript runtime environment                         |
+| Express.js     | Web application framework                              |
+| TypeScript     | Static type checking and enhanced developer experience |
+| MongoDB        | NoSQL document database                                |
+| Mongoose       | Object Data Modeling (ODM) library                     |
+| Passport.js    | Authentication middleware                              |
+| Zod            | Schema validation library                              |
+| Cookie-Session | Session management                                     |
 
 ### Frontend
 
-| Technology | Purpose |
-|------------|---------|
-| React 18 | Component-based user interface library |
-| TypeScript | Static type checking |
-| Vite | Build tool and development server |
-| React Router v7 | Client-side routing |
+| Technology           | Purpose                                   |
+| -------------------- | ----------------------------------------- |
+| React 18             | Component-based user interface library    |
+| TypeScript           | Static type checking                      |
+| Vite                 | Build tool and development server         |
+| React Router v7      | Client-side routing                       |
 | TanStack React Query | Server state management and data fetching |
-| Zustand | Client state management |
-| Tailwind CSS | Utility-first CSS framework |
-| Shadcn/UI | Accessible component library |
-| Axios | HTTP client |
+| Zustand              | Client state management                   |
+| Tailwind CSS         | Utility-first CSS framework               |
+| Shadcn/UI            | Accessible component library              |
+| Axios                | HTTP client                               |
 
 ## Features
 
 ### Workspace Management
+
 - Create and manage multiple workspaces
 - Workspace-level settings and configuration
 - Invite team members via shareable invite links
 - Workspace analytics and activity overview
 
 ### Project Management
+
 - Create projects within workspaces
 - Project-level task organization
 - Progress tracking with visual indicators
 - Project analytics including task completion rates
 
 ### Task Management
+
 - Create, update, and delete tasks
 - Assign tasks to team members
 - Set task priority levels (Low, Medium, High)
@@ -76,12 +79,14 @@ The application follows a client-server architecture with a RESTful API backend 
 - Table and Kanban board views
 
 ### Team Collaboration
+
 - Invite members to workspaces
 - Role-based access control with three roles (Owner, Admin, Member)
 - 16 granular permissions for fine-grained access control
 - Member management and role assignment
 
 ### User Experience
+
 - Responsive design for desktop and mobile devices
 - Dark mode and light mode themes
 - Global search functionality with keyboard shortcuts
@@ -117,37 +122,44 @@ MongoDB Database
 ### Collections
 
 **Users**
+
 - Stores user profile information
 - References current workspace
 - Supports multiple authentication providers
 
 **Accounts**
+
 - Manages authentication provider details
 - Supports local authentication and OAuth providers
 - Links to user documents
 
 **Workspaces**
+
 - Contains workspace metadata
 - Stores unique invite codes
 - References owner user
 
 **Members**
+
 - Junction collection for user-workspace relationships
 - Stores role assignments
 - Tracks join dates
 
 **Projects**
+
 - Belongs to a workspace
 - Contains project metadata and emoji identifiers
 - References creator user
 
 **Tasks**
+
 - Belongs to a workspace and project
 - Stores task details including title, description, status, priority
 - References assigned user and creator
 - Tracks due dates
 
 **Roles and Permissions**
+
 - Defines available roles
 - Maps permissions to roles
 - Used for authorization checks
@@ -157,11 +169,13 @@ MongoDB Database
 ### Authentication Methods
 
 **Local Authentication**
+
 - Email and password-based registration and login
 - Passwords hashed using bcrypt with salt rounds
 - Session-based authentication with HTTP-only cookies
 
 **OAuth 2.0 (Google)**
+
 - Google Sign-In integration
 - Automatic account creation for new OAuth users
 - Account linking for existing users
@@ -171,38 +185,41 @@ MongoDB Database
 The application implements Role-Based Access Control (RBAC) with the following hierarchy:
 
 **Owner**
+
 - Full access to all workspace features
 - Can delete workspace
 - Can manage all members including admins
 
 **Admin**
+
 - Can manage projects and tasks
 - Can invite and remove members
 - Cannot delete workspace or manage owners
 
 **Member**
+
 - Can view workspace content
 - Can create and manage own tasks
 - Limited administrative capabilities
 
 ### Permission Types
 
-| Permission | Description |
-|------------|-------------|
-| CREATE_WORKSPACE | Create new workspaces |
-| EDIT_WORKSPACE | Modify workspace settings |
-| DELETE_WORKSPACE | Delete workspace and all contents |
-| MANAGE_WORKSPACE_SETTINGS | Access workspace configuration |
-| ADD_MEMBER | Invite new members |
-| CHANGE_MEMBER_ROLE | Modify member roles |
-| REMOVE_MEMBER | Remove members from workspace |
-| CREATE_PROJECT | Create new projects |
-| EDIT_PROJECT | Modify project details |
-| DELETE_PROJECT | Remove projects |
-| CREATE_TASK | Create new tasks |
-| EDIT_TASK | Modify task details |
-| DELETE_TASK | Remove tasks |
-| VIEW_ONLY | Read-only access |
+| Permission                | Description                       |
+| ------------------------- | --------------------------------- |
+| CREATE_WORKSPACE          | Create new workspaces             |
+| EDIT_WORKSPACE            | Modify workspace settings         |
+| DELETE_WORKSPACE          | Delete workspace and all contents |
+| MANAGE_WORKSPACE_SETTINGS | Access workspace configuration    |
+| ADD_MEMBER                | Invite new members                |
+| CHANGE_MEMBER_ROLE        | Modify member roles               |
+| REMOVE_MEMBER             | Remove members from workspace     |
+| CREATE_PROJECT            | Create new projects               |
+| EDIT_PROJECT              | Modify project details            |
+| DELETE_PROJECT            | Remove projects                   |
+| CREATE_TASK               | Create new tasks                  |
+| EDIT_TASK                 | Modify task details               |
+| DELETE_TASK               | Remove tasks                      |
+| VIEW_ONLY                 | Read-only access                  |
 
 ## API Documentation
 
@@ -214,60 +231,60 @@ http://localhost:8000/api
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /auth/register | Register new user |
-| POST | /auth/login | Login with credentials |
-| POST | /auth/logout | End user session |
-| GET | /auth/google | Initiate Google OAuth |
-| GET | /auth/google/callback | Google OAuth callback |
+| Method | Endpoint              | Description            |
+| ------ | --------------------- | ---------------------- |
+| POST   | /auth/register        | Register new user      |
+| POST   | /auth/login           | Login with credentials |
+| POST   | /auth/logout          | End user session       |
+| GET    | /auth/google          | Initiate Google OAuth  |
+| GET    | /auth/google/callback | Google OAuth callback  |
 
 ### User Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /user/current | Get authenticated user |
-| PUT | /user/current | Update user profile |
+| Method | Endpoint      | Description            |
+| ------ | ------------- | ---------------------- |
+| GET    | /user/current | Get authenticated user |
+| PUT    | /user/current | Update user profile    |
 
 ### Workspace Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /workspace/create/new | Create workspace |
-| GET | /workspace/all | Get user workspaces |
-| GET | /workspace/:id | Get workspace by ID |
-| PUT | /workspace/update/:id | Update workspace |
-| DELETE | /workspace/delete/:id | Delete workspace |
-| GET | /workspace/members/:id | Get workspace members |
-| GET | /workspace/analytics/:id | Get workspace analytics |
-| PUT | /workspace/change-role/:id | Change member role |
+| Method | Endpoint                   | Description             |
+| ------ | -------------------------- | ----------------------- |
+| POST   | /workspace/create/new      | Create workspace        |
+| GET    | /workspace/all             | Get user workspaces     |
+| GET    | /workspace/:id             | Get workspace by ID     |
+| PUT    | /workspace/update/:id      | Update workspace        |
+| DELETE | /workspace/delete/:id      | Delete workspace        |
+| GET    | /workspace/members/:id     | Get workspace members   |
+| GET    | /workspace/analytics/:id   | Get workspace analytics |
+| PUT    | /workspace/change-role/:id | Change member role      |
 
 ### Project Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /project/workspace/:workspaceId/create | Create project |
-| GET | /project/workspace/:workspaceId/all | Get all projects |
-| GET | /project/:workspaceId/:id | Get project by ID |
-| PUT | /project/:workspaceId/update/:id | Update project |
-| DELETE | /project/:workspaceId/delete/:id | Delete project |
-| GET | /project/:workspaceId/:id/analytics | Get project analytics |
+| Method | Endpoint                               | Description           |
+| ------ | -------------------------------------- | --------------------- |
+| POST   | /project/workspace/:workspaceId/create | Create project        |
+| GET    | /project/workspace/:workspaceId/all    | Get all projects      |
+| GET    | /project/:workspaceId/:id              | Get project by ID     |
+| PUT    | /project/:workspaceId/update/:id       | Update project        |
+| DELETE | /project/:workspaceId/delete/:id       | Delete project        |
+| GET    | /project/:workspaceId/:id/analytics    | Get project analytics |
 
 ### Task Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /task/project/:projectId/workspace/:workspaceId/create | Create task |
-| GET | /task/workspace/:workspaceId/all | Get all tasks |
-| GET | /task/:workspaceId/project/:projectId/:id | Get task by ID |
-| PUT | /task/project/:projectId/workspace/:workspaceId/update/:id | Update task |
-| DELETE | /task/workspace/:workspaceId/delete/:id | Delete task |
+| Method | Endpoint                                                   | Description    |
+| ------ | ---------------------------------------------------------- | -------------- |
+| POST   | /task/project/:projectId/workspace/:workspaceId/create     | Create task    |
+| GET    | /task/workspace/:workspaceId/all                           | Get all tasks  |
+| GET    | /task/:workspaceId/project/:projectId/:id                  | Get task by ID |
+| PUT    | /task/project/:projectId/workspace/:workspaceId/update/:id | Update task    |
+| DELETE | /task/workspace/:workspaceId/delete/:id                    | Delete task    |
 
 ### Member Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /member/workspace/:inviteCode/join | Join workspace via invite |
+| Method | Endpoint                           | Description               |
+| ------ | ---------------------------------- | ------------------------- |
+| POST   | /member/workspace/:inviteCode/join | Join workspace via invite |
 
 ## Installation
 
@@ -366,6 +383,39 @@ cd client
 npm run build
 ```
 
+### Docker Deployment
+
+The easiest way to run WorkPulse in production is using Docker:
+
+```bash
+# 1. Copy environment file and configure
+cp .env.docker.example .env
+
+# 2. Build and start all services
+docker-compose up --build -d
+
+# 3. Seed the database (first time only)
+docker-compose exec backend node dist/index.js
+# Then in another terminal:
+docker-compose exec mongodb mongosh workpulse_db --eval "db.roles.find()"
+```
+
+**Docker Services:**
+- **MongoDB**: Database on port 27017
+- **Backend**: API server on port 8000
+- **Frontend**: Nginx server on port 80
+
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (clears database)
+docker-compose down -v
+```
+
 ### Access Application
 
 - Frontend: http://localhost:5173
@@ -420,22 +470,26 @@ WorkPulse/
 ### Backend Architecture
 
 **Layered Architecture**
+
 - Controllers handle HTTP request/response
 - Services contain business logic
 - Models define data structure and database operations
 - Clear separation of concerns for maintainability
 
 **Error Handling**
+
 - Centralized error handling middleware
 - Custom error classes for different error types
 - Consistent error response format across API
 
 **Input Validation**
+
 - Zod schemas for request validation
 - Type-safe validation with TypeScript integration
 - Detailed validation error messages
 
 **Security Measures**
+
 - HTTP-only session cookies
 - CORS configuration for cross-origin requests
 - Password hashing with bcrypt
@@ -444,22 +498,26 @@ WorkPulse/
 ### Frontend Architecture
 
 **State Management Strategy**
+
 - TanStack React Query for server state (API data)
 - Zustand for client state (UI state, dialogs)
 - Optimistic updates for better user experience
 
 **Component Design**
+
 - Reusable UI components with Shadcn/UI
 - Compound component patterns
 - Accessible components following WAI-ARIA guidelines
 
 **Performance Optimizations**
+
 - Code splitting with React Router
 - Lazy loading for route components
 - Debounced search inputs
 - Skeleton loaders for perceived performance
 
 **Type Safety**
+
 - End-to-end TypeScript implementation
 - Shared type definitions for API responses
 - Strict TypeScript configuration
@@ -470,11 +528,3 @@ WorkPulse/
 - Environment-based configuration
 - Consistent code formatting
 - Modular and scalable project structure
-
-## License
-
-This project is developed for educational and portfolio purposes.
-
----
-
-Developed as a full-stack web application demonstrating proficiency in modern web development technologies including React, Node.js, TypeScript, MongoDB, and RESTful API design.

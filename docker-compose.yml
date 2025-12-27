@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: workpulse-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=workpulse_db
+    networks:
+      - workpulse-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: workpulse-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - MONGO_URI=mongodb://mongodb:27017/workpulse_db
+      - SESSION_SECRET=${SESSION_SECRET:-your-super-secret-session-key}
+      - SESSION_EXPIRES_IN=1d
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://localhost:8000/api/auth/google/callback}
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN:-http://localhost}
+      - FRONTEND_GOOGLE_CALLBACK_URL=${FRONTEND_GOOGLE_CALLBACK_URL:-http://localhost/google/callback}
+    depends_on:
+      - mongodb
+    networks:
+      - workpulse-network
+
+  # Frontend (Nginx)
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8000/api}
+    container_name: workpulse-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - workpulse-network
+
+networks:
+  workpulse-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
