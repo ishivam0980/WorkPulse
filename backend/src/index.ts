@@ -27,6 +27,9 @@ const BASE_PATH = config.BASE_PATH;
 // Initialize Socket.IO
 initializeSocket(httpServer);
 
+// Trust proxy for Railway (required for secure cookies behind reverse proxy)
+app.set("trust proxy", 1);
+
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
