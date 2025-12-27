@@ -52,6 +52,15 @@ The application follows a client-server architecture with a RESTful API backend 
 | Tailwind CSS         | Utility-first CSS framework               |
 | Shadcn/UI            | Accessible component library              |
 | Axios                | HTTP client                               |
+| Socket.IO Client     | Real-time updates                         |
+
+### DevOps
+
+| Technology      | Purpose                                      |
+| --------------- | -------------------------------------------- |
+| Docker          | Containerization                             |
+| Docker Compose  | Multi-container orchestration                |
+| Nginx           | Production web server for frontend           |
 
 ## Features
 
@@ -94,6 +103,13 @@ The application follows a client-server architecture with a RESTful API backend 
 - Real-time form validation
 - Loading states and skeleton loaders
 - Error handling with user-friendly messages
+
+### Real-time Features
+
+- Live task updates across all connected clients
+- Workspace-scoped real-time events
+- Automatic UI refresh on task create/update/delete
+- Socket.IO powered bidirectional communication
 
 ## System Architecture
 
