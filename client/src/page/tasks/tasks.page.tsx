@@ -14,12 +14,16 @@ import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskTable } from "@/components/task/task-table";
 import { KanbanBoard } from "@/components/task/kanban-board";
+import { useRealtimeTasks } from "@/hooks/use-realtime-tasks";
 
 const TasksPage = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const { onOpen: openCreateTask } = useCreateTaskDialog();
   const { view, setView, pageNumber, pageSize } = useTaskTableView();
   const filters = useTaskFilters();
+
+  // Enable real-time updates for tasks
+  useRealtimeTasks({ workspaceId: workspaceId! });
 
   const { data, isLoading } = useGetTasksQuery({
     workspaceId: workspaceId!,

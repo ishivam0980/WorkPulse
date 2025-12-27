@@ -10,7 +10,12 @@
     "build": "tsc",
     "start": "node dist/index.js"
   },
-  "keywords": ["project-management", "team-collaboration", "b2b", "saas"],
+  "keywords": [
+    "project-management",
+    "team-collaboration",
+    "b2b",
+    "saas"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,6 +28,7 @@
     "passport": "^0.5.3",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
+    "socket.io": "^4.8.3",
     "uuid": "^11.0.3",
     "zod": "^3.24.1"
   },

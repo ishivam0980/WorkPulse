@@ -2,11 +2,13 @@ import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import session from "cookie-session";
+import { createServer } from "http";
 import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { HTTPSTATUS } from "./config/http.config";
 import { asyncHandler } from "./middlewares/asyncHandler.middleware";
+import { initializeSocket } from "./config/socket.config";
 
 import "./config/passport.config";
 import passport from "passport";
@@ -19,7 +21,11 @@ import taskRoutes from "./routes/task.route";
 import isAuthenticated from "./middlewares/isAuthenticated.middleware";
 
 const app = express();
+const httpServer = createServer(app);
 const BASE_PATH = config.BASE_PATH;
+
+// Initialize Socket.IO
+initializeSocket(httpServer);
 
 app.use(express.json());
 
@@ -50,7 +56,7 @@ app.get(
   `/`,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     return res.status(HTTPSTATUS.OK).json({
-      message: "WorkPulse API is running 🚀",
+      message: "WorkPulse API is running 🚀 (with Socket.IO)",
     });
   })
 );
@@ -67,7 +73,8 @@ app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
 
 app.use(errorHandler);
 
-app.listen(config.PORT, async () => {
+httpServer.listen(config.PORT, async () => {
   console.log(`🚀 WorkPulse server running on port ${config.PORT} in ${config.NODE_ENV} mode`);
+  console.log(`🔌 Socket.IO enabled for real-time updates`);
   await connectDatabase();
 });

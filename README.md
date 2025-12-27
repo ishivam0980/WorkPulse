@@ -37,6 +37,7 @@ The application follows a client-server architecture with a RESTful API backend 
 | Passport.js    | Authentication middleware                              |
 | Zod            | Schema validation library                              |
 | Cookie-Session | Session management                                     |
+| Socket.IO      | Real-time bidirectional event-based communication      |
 
 ### Frontend
 

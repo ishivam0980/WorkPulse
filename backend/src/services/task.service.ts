@@ -3,6 +3,7 @@ import MemberModel from "../models/member.model";
 import ProjectModel from "../models/project.model";
 import TaskModel from "../models/task.model";
 import { BadRequestException, NotFoundException } from "../utils/appError";
+import { emitTaskEvent } from "../config/socket.config";
 
 export const createTaskService = async (
   workspaceId: string,
@@ -50,6 +51,9 @@ export const createTaskService = async (
 
   await task.save();
 
+  // Emit real-time event
+  emitTaskEvent(workspaceId, "task:created", task);
+
   return { task };
 };
 
@@ -93,6 +97,9 @@ export const updateTaskService = async (
   if (!updatedTask) {
     throw new BadRequestException("Failed to update task");
   }
+
+  // Emit real-time event
+  emitTaskEvent(workspaceId, "task:updated", updatedTask);
 
   return { updatedTask };
 };
@@ -209,6 +216,9 @@ export const deleteTaskService = async (
       "Task not found or does not belong to the specified workspace"
     );
   }
+
+  // Emit real-time event
+  emitTaskEvent(workspaceId, "task:deleted", { taskId, workspaceId });
 
   return;
 };
