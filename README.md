@@ -6,8 +6,31 @@ WorkPulse is a full-stack Software-as-a-Service (SaaS) application designed for 
 
 **🚀 Live Demo:** [https://splendid-tranquility-production.up.railway.app](https://splendid-tranquility-production.up.railway.app)
 
+## Screenshots
+
+### Authentication
+| Sign In | Sign Up |
+|---------|---------|
+| ![Sign In](screenshots/signin.png) | ![Sign Up](screenshots/signup.png) |
+
+### Dashboard & Workspace
+| Dashboard | Create Workspace |
+|-----------|------------------|
+| ![Dashboard](screenshots/dashboard.png) | ![Create Workspace](screenshots/create-workspace.png) |
+
+### Task Management
+| Task Management | Settings |
+|-----------------|----------|
+| ![Task Management](screenshots/task-management.png) | ![Settings](screenshots/settings.png) |
+
+### Team & Themes
+| Members Management | Light Theme |
+|--------------------|-------------|
+| ![Members Management](screenshots/members-management.png) | ![Light Theme](screenshots/light-theme.png) |
+
 ## Table of Contents
 
+- [Screenshots](#screenshots)
 - [Overview](#overview)
 - [Technology Stack](#technology-stack)
 - [Features](#features)
